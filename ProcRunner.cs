@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ProcRunner
 {
-    public class ProcRunner
+    public class ProcRunner : IDisposable
     {
         private readonly ProcessStartInfo _processInfo;
         private Process _process;
@@ -135,5 +135,11 @@ namespace ProcRunner
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            if(_process != null && !HasExited)
+                StopProgram(_process);
+        }
     }
 }
