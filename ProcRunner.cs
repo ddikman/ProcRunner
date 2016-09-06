@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace ProcRunner
@@ -79,5 +81,59 @@ namespace ProcRunner
 
         public string Output => _output.ToString();
         public string Error => _error.ToString();
+
+        public void KillGracefully()
+        {
+            if (HasExited)
+                return;
+
+            StopProgram(_process);
+            if (!_process.HasExited)
+                _process.Kill();
+        }
+
+        #region Stop a Process
+        // See information at http://stanislavs.org/stopping-command-line-applications-programatically-with-ctrl-c-events-from-net/
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern bool AttachConsole(uint dwProcessId);
+
+        [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
+        static extern bool FreeConsole();
+
+        private const int CtrlCEvent = 0;
+
+        [DllImport("kernel32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GenerateConsoleCtrlEvent(uint dwCtrlEvent, uint dwProcessGroupId);
+
+        // Delegate type to be used as the Handler Routine for SCCH
+        delegate Boolean ConsoleCtrlDelegate(uint ctrlType);
+
+        [DllImport("kernel32.dll")]
+        static extern bool SetConsoleCtrlHandler(ConsoleCtrlDelegate handlerRoutine, bool add);
+
+        private void StopProgram(Process proc)
+        {
+            //This does not require the console window to be visible.
+            if (!AttachConsole((uint) proc.Id))
+                return;
+
+            // Disable Ctrl-C handling for our program
+            SetConsoleCtrlHandler(null, true);
+            GenerateConsoleCtrlEvent(CtrlCEvent, 0);
+
+            // Must wait here. If we don't and re-enable Ctrl-C
+            // handling below too fast, we might terminate ourselves.
+            WaitForExit(2000);
+
+            FreeConsole();
+
+            //Re-enable Ctrl-C handling or any subsequently started
+            //programs will inherit the disabled state.
+            SetConsoleCtrlHandler(null, false);
+        }
+
+        #endregion
     }
 }

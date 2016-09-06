@@ -46,12 +46,15 @@
   <ItemGroup>
     <Compile Include="BufferOverflow.cs" />
     <Compile Include="Error.cs" />
+    <Compile Include="ExceptionFormatterExtension.cs" />
     <Compile Include="GenerateMode.cs" />
     <Compile Include="Output.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleExtension.cs" />
+    <Compile Include="SimpleLog.cs" />
     <Compile Include="Timeout.cs" />
+    <Compile Include="WaitForCancel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

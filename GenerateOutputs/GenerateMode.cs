@@ -5,6 +5,7 @@
         BufferOverflow,
         Output,
         Error,
-        Timeout
+        Timeout,
+        WaitForCancel
     }
 }
