@@ -5,9 +5,7 @@ namespace ProcRunner
 {
     public class ProcRunner
     {
-        private readonly string _executablePath;
-        private readonly string _arguments;
-        private ProcessStartInfo _processInfo;
+        private readonly ProcessStartInfo _processInfo;
         private Process _process;
         private readonly StringBuilder _output = new StringBuilder();
         private readonly StringBuilder _error = new StringBuilder();
@@ -16,9 +14,6 @@ namespace ProcRunner
 
         public ProcRunner(string executablePath, string arguments)
         {
-            _executablePath = executablePath;
-            _arguments = arguments;
-
             _processInfo = new ProcessStartInfo
             {
                 UseShellExecute = false,
